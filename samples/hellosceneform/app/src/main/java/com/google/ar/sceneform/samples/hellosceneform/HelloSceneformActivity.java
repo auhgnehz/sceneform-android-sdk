@@ -23,6 +23,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.widget.Toast;
@@ -30,6 +31,9 @@ import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.animation.ModelAnimator;
+import com.google.ar.sceneform.rendering.AnimationData;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -43,6 +47,8 @@ public class HelloSceneformActivity extends AppCompatActivity {
 
   private ArFragment arFragment;
   private ModelRenderable andyRenderable;
+  private AnimationData danceData;
+  private ModelAnimator andyAnimator;
 
   @Override
   @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
@@ -61,7 +67,7 @@ public class HelloSceneformActivity extends AppCompatActivity {
     // When you build a Renderable, Sceneform loads its resources in the background while returning
     // a CompletableFuture. Call thenAccept(), handle(), or check isDone() before calling get().
     ModelRenderable.builder()
-        .setSource(this, R.raw.andy)
+        .setSource(this, R.raw.andy_dance)
         .build()
         .thenAccept(renderable -> andyRenderable = renderable)
         .exceptionally(
@@ -88,7 +94,10 @@ public class HelloSceneformActivity extends AppCompatActivity {
           TransformableNode andy = new TransformableNode(arFragment.getTransformationSystem());
           andy.setParent(anchorNode);
           andy.setRenderable(andyRenderable);
-          andy.select();
+          // ** Add the animation playback data here.
+          AnimationData danceData = andyRenderable.getAnimationData("andy_dance");
+          ModelAnimator andyAnimator = new ModelAnimator(danceData, andyRenderable);
+          andyAnimator.start();
         });
   }
 
